@@ -402,7 +402,7 @@ window.ANCLive=function(R){
   var ipHost=/^[\d.]+$|:/.test(R.host),jobs=[];
   if(ipHost)jobs.push(geo(R.host,S));
   else{jobs.push(dns(R,S).then(function(ips){return ips&&ips[0]?geo(ips[0],S):null}));jobs.push(rdap(R,S))}
-  jobs.push(wayback(R,S),content(R,S),gsb(R,S),vt(R,S));
+  jobs.push(wayback(R,S),content(R,S));
   Promise.all(jobs.map(function(p){return p.catch(function(){})})).then(function(){if(live())hist({u:R.u.href,s:R.final!=null?R.final:R.score})});
 };
 
@@ -412,13 +412,7 @@ window.ANCLive=function(R){
   var st=document.createElement("style");
   st.textContent="details.card summary{cursor:pointer;color:var(--pur);font-weight:600}details.card label{display:flex;gap:8px;align-items:center;margin:12px 0 4px;font-size:.9rem}details.card input[type=text],details.card input[type=password]{width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);background:#0000002e;color:var(--tx)}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.chip{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;padding:6px 11px;font-size:.8rem;cursor:pointer}.chip b{margin-left:8px}";
   document.head.appendChild(st);
-  var d=document.createElement("details");d.className="card";
-  d.innerHTML='<summary>Réglages</summary><label><input type="checkbox" id="s-ct"> Analyser le contenu de la page (via le proxy public allorigins.win)</label><p class="note">L’URL est envoyée à ce service tiers. Désactive-le si l’adresse est confidentielle.</p><label>Clé API Google Safe Browsing (optionnel)</label><input type="password" id="s-gsb" autocomplete="off"><label>Clé API VirusTotal (optionnel)</label><input type="password" id="s-vt" autocomplete="off"><p class="note">Les clés restent dans ton navigateur (localStorage) et ne sont envoyées qu’à Google ou VirusTotal.</p>';
-  out.parentNode.insertBefore(h,out);out.parentNode.insertBefore(d,out);
-  $("s-ct").checked=store("anc_ct")!=="0";
-  $("s-ct").onchange=function(){store("anc_ct",this.checked?"1":"0")};
-  $("s-gsb").value=store("anc_gsb")||"";$("s-gsb").onchange=function(){store("anc_gsb",this.value.trim())};
-  $("s-vt").value=store("anc_vt")||"";$("s-vt").onchange=function(){store("anc_vt",this.value.trim())};
+  out.parentNode.insertBefore(h,out);
   hist();
   var p=new URLSearchParams(location.search).get("url");
   if(p){$("u").value=p;setTimeout(function(){$("go").click()},60)}
